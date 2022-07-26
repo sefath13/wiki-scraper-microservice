@@ -33,7 +33,7 @@ channel.basic_publish(
             exchange='',
             routing_key='wiki_queue',
             properties=pika.BasicProperties(
-                reply_to=self.callback_queue,
+                reply_to=callback_queue,
                 correlation_id=corr_id),
             body=n.encode())
 connection.process_data_events(time_limit=None)
@@ -44,11 +44,11 @@ return response.decode()
 8. Have the following code to receive data:
 ```          
 response = None
-def on_response(self, ch, method, props, body):
-    if self.corr_id == props.correlation_id:
+def on_response(ch, method, props, body):
+    if corr_id == props.correlation_id:
           response = body
 channel.basic_consume(
-            queue=self.callback_queue,
+            queue=callback_queue,
             on_message_callback=on_response,
             auto_ack=True)
 ```
