@@ -22,7 +22,6 @@ class WikiScraperRpcClient(object):
             auto_ack=True)
 
 
-
     # function to make sure correlation ids match to get proper response
     def on_response(self, ch, method, props, body):
         if self.corr_id == props.correlation_id:
