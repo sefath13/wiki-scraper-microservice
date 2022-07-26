@@ -7,7 +7,6 @@ channel = connection.channel()
 
 channel.queue_declare(queue='wiki_queue')
 
-
 def wiki_scraper(n):
     n = 'the ' + n
     return wikipedia.summary(n, sentences=2)
