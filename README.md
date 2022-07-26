@@ -19,15 +19,15 @@ channel = connection.channel()
 
 result = channel.queue_declare(queue='', exclusive=True)
 callback_queue = result.method.queue
-
 ```
 4. The type of call that is being done here is called **Remote Procedure Call (RPC)**, where a client sends a request message and a server replies with a response message, all done through a 'callback' queue. 
 5. An important distinction with this call would be the 'Correlation ID' which makes sure the response matches with the request. 
-6. Have the following code to request data, preferably in a function to properly abstract out the code:
+6. Import the 'Universally Unique Identifier' package so we can generate unique IDs. 
 ```
-# package required to make a unique ID
 import uuid
-
+```
+7. Have the following code to request data, preferably in a function to properly abstract out the code:
+```
 corr_id = str(uuid.uuid4())
 channel.basic_publish(
             exchange='',
@@ -52,7 +52,7 @@ channel.basic_consume(
             on_message_callback=on_response,
             auto_ack=True)
 ```
-**Note:** All this code is adapted from RabbitMQ tutorials that can be accessed [here](https://www.rabbitmq.com/tutorials/tutorial-six-python.html).
+### **Please Note:** All this code is adapted from RabbitMQ tutorials that can be accessed [here](https://www.rabbitmq.com/tutorials/tutorial-six-python.html).
 
 ## UML Diagram
 ![Wiki Scraper Microservice - Activity diagram](https://user-images.githubusercontent.com/74398530/180913303-ad524579-1909-4b88-a0a3-115d44f94e08.png)
