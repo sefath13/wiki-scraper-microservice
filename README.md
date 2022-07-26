@@ -2,7 +2,7 @@
 
 A microservice that allows you to request a 2-sentence summary for any Wikipedia article. 
 
-***Utilizes RabbitMQ as Communication Pipeline***
+**Utilizes _RabbitMQ_ as the Communication Pipeline**
 
 Code Adapted From: https://www.rabbitmq.com/tutorials/tutorial-six-python.html (7/25/2022)
 
@@ -20,25 +20,39 @@ channel = connection.channel()
 result = channel.queue_declare(queue='', exclusive=True)
 callback_queue = result.method.queue
 
-channel.basic_consume(
-            queue=self.callback_queue,
-            on_message_callback=self.on_response,
-            auto_ack=True)
 ```
 4. The type of call that is being done here is called **Remote Procedure Call (RPC)**, where a client sends a request message and a server replies with a response message, all done through a 'callback' queue. 
-5. An important distinction with this call would be the 'Correlation ID' 
-
+5. An important distinction with this call would be the 'Correlation ID' which makes sure the response matches with the request. 
 6. Have the following code to request data, preferably in a function to properly abstract out the code:
 ```
-receive data
-```
+# package required to make a unique ID
+import uuid
 
+corr_id = str(uuid.uuid4())
+channel.basic_publish(
+            exchange='',
+            routing_key='wiki_queue',
+            properties=pika.BasicProperties(
+                reply_to=self.callback_queue,
+                correlation_id=corr_id),
+            body=n.encode())
+connection.process_data_events(time_limit=None)
+return response.decode()
+```
 ## How to Receive Data: 
-7. Have the following code to receive data:
+7. The next segment of code would be a separate function to check the response receive has the same correlation id and to have the response tied to the response so the program can receive the data properly.
+8. Have the following code to receive data:
+```          
+response = None
+def on_response(self, ch, method, props, body):
+    if self.corr_id == props.correlation_id:
+          response = body
+channel.basic_consume(
+            queue=self.callback_queue,
+            on_message_callback=on_response,
+            auto_ack=True)
 ```
-receive data
-```
-
+**Note:** All this code is adapted from RabbitMQ tutorials that can be accessed [here](https://www.rabbitmq.com/tutorials/tutorial-six-python.html).
 
 ## UML Diagram
 ![Wiki Scraper Microservice - Activity diagram](https://user-images.githubusercontent.com/74398530/180913303-ad524579-1909-4b88-a0a3-115d44f94e08.png)
