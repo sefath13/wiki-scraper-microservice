@@ -6,13 +6,18 @@ A microservice that allows you to request a 2-sentence summary for any Wikipedia
 
 Code Adapted From: https://www.rabbitmq.com/tutorials/tutorial-six-python.html (7/25/2022)
 
+## Packages to Install:
+You will need to install the library 'wikipedia, 'pika' package for RabbitMQ, and the 'Universally Unique Identifier' or 'uuid':
+```
+pip install wikipedia, pika, uuid
+```
+OR
+```
+py -m pip install wikipedia, pika, uuid
+```
 ## How to Request Data:
-1. First, make sure you have the 'pika' package downloaded in the root directory of your project, if you haven't done so already.
-```
-pip install pika
-```
-2. Also be sure to have [RabbitMQ](https://www.rabbitmq.com/download.html) downloaded to create proper connection channels. 
-3. Have the following code in your program: 
+1. Also be sure to have [RabbitMQ](https://www.rabbitmq.com/download.html) downloaded to create proper connection channels. 
+2. Have the following code in your program: 
 ```
 connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost')
 channel = connection.channel()
@@ -20,13 +25,13 @@ channel = connection.channel()
 result = channel.queue_declare(queue='', exclusive=True)
 callback_queue = result.method.queue
 ```
-4. The type of call that is being done here is called **Remote Procedure Call (RPC)**, where a client sends a request message and a server replies with a response message, all done through a 'callback' queue. 
-5. An important distinction with this call would be the 'Correlation ID' which makes sure the response matches with the request. 
-6. Import the 'Universally Unique Identifier' package so we can generate unique IDs. 
+3. The type of call that is being done here is called **Remote Procedure Call (RPC)**, where a client sends a request message and a server replies with a response message, all done through a 'callback' queue. 
+4. An important distinction with this call would be the 'Correlation ID' which makes sure the response matches with the request. 
+5. Import the 'Universally Unique Identifier' package so we can generate unique IDs. 
 ```
 import uuid
 ```
-7. Have the following code to request data, preferably in a function to properly abstract out the code:
+6. Have the following code to request data, preferably in a function to properly abstract out the code:
 ```
 corr_id = str(uuid.uuid4())
 channel.basic_publish(
